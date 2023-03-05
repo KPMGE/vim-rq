@@ -4,15 +4,20 @@ local function is_in_visual_line_mode(lt_col, gt_col)
   return lt_col == 0 and gt_col > 1000
 end
 
-function get_visual_selection()
+local function get_visual_selection()
   local bufnr = vim.api.nvim_get_current_buf()
   -- [bufnum, lnum, col, off]
   local _, start_row, start_col, _ = unpack(vim.fn.getpos("'<"))
   -- Get the start and end positions of the visual selection
   local _, end_row, end_col, _ = unpack(vim.fn.getpos("'>"))
 
+
   -- Get the lines of text between the start and end positions
   local lines = vim.api.nvim_buf_get_lines(bufnr, start_row - 1, end_row, false)
+
+  -- for key, val in pairs(lines) do
+  --   print(key.. " = " ..val)
+  -- end
 
   -- If the selection spans multiple lines, remove any leading or trailing whitespace
   if #lines > 1 and not is_in_visual_line_mode(start_col, end_col) then
@@ -76,4 +81,10 @@ function process_selection()
   end
 end
 
-vim.api.nvim_set_keymap('v', '<leader>k', [[:lua process_selection()<CR>]], { noremap = true })
+local function init()
+  vim.api.nvim_set_keymap('v', '<leader>k', [[:lua process_selection()<CR>]], { noremap = true })
+end
+
+return {
+  init = init,
+}
